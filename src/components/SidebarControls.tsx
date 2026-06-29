@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { 
   Upload, Layers, Sliders, Palette, Shield, Smartphone, Download, 
   RotateCcw, SlidersHorizontal, RefreshCw, FlipHorizontal, FlipVertical,
-  Check, Eye, Sparkles, AlertCircle
+  Check, Eye, Sparkles, AlertCircle, Search, X, Loader2
 } from 'lucide-react';
 import { ImageSettings, FilterSettings, MockupOverlay, PresetImage, DevicePreset } from '../types';
-import { PRESET_IMAGES, CLOCK_FONTS, PRESET_GRADIENTS, DEVICE_PRESETS } from '../presets';
+import { PRESET_IMAGES, CLOCK_FONTS, PRESET_GRADIENTS } from '../presets';
 
 interface SidebarControlsProps {
   imageSettings: ImageSettings;
@@ -21,6 +21,8 @@ interface SidebarControlsProps {
   imageUrl: string;
   selectedDevice: DevicePreset;
   onChangeDevice: (device: DevicePreset) => void;
+  devicePresets: DevicePreset[];
+  onAddCustomDevice: (device: DevicePreset) => void;
 }
 
 export default function SidebarControls({
@@ -36,12 +38,20 @@ export default function SidebarControls({
   onResetAll,
   imageUrl,
   selectedDevice,
-  onChangeDevice
+  onChangeDevice,
+  devicePresets,
+  onAddCustomDevice
 }: SidebarControlsProps) {
   const [activeTab, setActiveTab] = useState<'source' | 'adjust' | 'style' | 'overlay'>('source');
   const [exportFormat, setExportFormat] = useState<'png' | 'jpeg'>('png');
   const [includeOverlayOnExport, setIncludeOverlayOnExport] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // AI Resolution Search States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchSuccess, setSearchSuccess] = useState<string | null>(null);
 
   // Quick reset functions
   const handleResetPosition = () => {
@@ -78,6 +88,45 @@ export default function SidebarControls({
     }
   };
 
+  const handleAISearchResolution = async () => {
+    if (!searchQuery.trim()) {
+      setSearchError('모델명을 입력해주세요.');
+      return;
+    }
+
+    setIsSearching(true);
+    setSearchError(null);
+    setSearchSuccess(null);
+
+    try {
+      const response = await fetch('/api/search-resolution', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: searchQuery.trim() }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || '스펙을 불러오지 못했습니다.');
+      }
+
+      const data: DevicePreset = await response.json();
+      onAddCustomDevice(data);
+      setSearchSuccess(`성공! ${data.name} (${data.width}x${data.height}px) 스펙을 적용했습니다.`);
+      setSearchQuery('');
+      
+      // Auto dismiss success toast
+      setTimeout(() => setSearchSuccess(null), 5000);
+    } catch (err: any) {
+      console.error(err);
+      setSearchError(err.message || '인터넷 검색 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const presetColors = [
     '#000000', '#ffffff', '#1e293b', '#ef4444', 
     '#f97316', '#eab308', '#22c55e', '#06b6d4', 
@@ -95,39 +144,150 @@ export default function SidebarControls({
       
       {/* Smartphone Model Selection Header Card */}
       <div className="bg-zinc-900/40 border-b border-zinc-800/80 p-4 flex flex-col gap-2.5">
+        
+        {/* Title and resolution display */}
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold tracking-tight text-zinc-300 flex items-center gap-1.5">
             <Smartphone size={14} className="text-sky-400" />
-            대상 스마트폰 모델 선택
+            대상 스마트폰 모델 선택 및 검색
           </label>
           <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 border border-sky-500/15 px-2 py-0.5 rounded">
             {selectedDevice.width} × {selectedDevice.height} px
           </span>
         </div>
-        
+
+        {/* 1. 스마트폰 모델명 실시간 검색창 */}
+        <div className="relative flex gap-1.5">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setSearchError(null);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleAISearchResolution();
+                }
+              }}
+              placeholder="모델명 검색 (예: S24 Ultra, Note 20, Pixel 9)"
+              className="w-full bg-zinc-950 border border-zinc-800 text-zinc-100 pl-8.5 pr-8 py-2 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 placeholder-zinc-500"
+            />
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500 pointer-events-none">
+              <Search size={13} />
+            </div>
+            {searchQuery && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSearchError(null);
+                }}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 hover:text-white cursor-pointer"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+          
+          <button
+            onClick={handleAISearchResolution}
+            disabled={isSearching}
+            className="px-3.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 disabled:from-zinc-800 disabled:to-zinc-800 text-white rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex items-center gap-1.5 shadow-md shrink-0"
+          >
+            {isSearching ? (
+              <Loader2 size={13} className="animate-spin text-white" />
+            ) : (
+              <Sparkles size={12} className="text-yellow-200" />
+            )}
+            AI 검색
+          </button>
+        </div>
+
+        {/* Search Status (Loading, Error, Success) */}
+        {isSearching && (
+          <div className="text-[11px] text-sky-400 flex items-center gap-1.5 bg-sky-500/5 border border-sky-500/10 px-3 py-2 rounded-xl">
+            <Loader2 size={12} className="animate-spin" />
+            <span>AI가 인터넷에서 <strong>"{searchQuery}"</strong> 모델의 공식 해상도를 조회하는 중입니다...</span>
+          </div>
+        )}
+
+        {searchError && (
+          <div className="text-[11px] text-red-400 flex items-center gap-1.5 bg-red-500/5 border border-red-500/10 px-3 py-2 rounded-xl">
+            <AlertCircle size={12} className="shrink-0" />
+            <span>{searchError}</span>
+          </div>
+        )}
+
+        {searchSuccess && (
+          <div className="text-[11px] text-emerald-400 flex items-center gap-1.5 bg-emerald-500/5 border border-emerald-500/10 px-3 py-2 rounded-xl">
+            <Check size={12} className="shrink-0" />
+            <span>{searchSuccess}</span>
+          </div>
+        )}
+
+        {/* 2. 스마트폰 선택 드롭다운 (실시간 검색어 필터링 지원) */}
         <div className="relative">
           <select
             value={selectedDevice.id}
             onChange={(e) => {
-              const found = DEVICE_PRESETS.find(d => d.id === e.target.value);
-              if (found) onChangeDevice(found);
+              const found = devicePresets.find(d => d.id === e.target.value);
+              if (found) {
+                onChangeDevice(found);
+                setSearchError(null);
+                setSearchSuccess(null);
+              }
             }}
             className="w-full bg-zinc-950 border border-zinc-800 text-zinc-100 px-3.5 py-2.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 appearance-none cursor-pointer"
           >
-            <optgroup label="Apple iPhone" className="bg-zinc-950 text-sky-400 font-semibold text-[11px] py-1">
-              {DEVICE_PRESETS.filter(d => d.id.startsWith('iphone-')).map((dev) => (
-                <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-normal font-sans text-xs">
-                  {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label="Samsung Galaxy S" className="bg-zinc-950 text-emerald-400 font-semibold text-[11px] py-1">
-              {DEVICE_PRESETS.filter(d => d.id.startsWith('galaxy-')).map((dev) => (
-                <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-normal font-sans text-xs">
-                  {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
-                </option>
-              ))}
-            </optgroup>
+            {/* Filtered drop-down results if query is present, otherwise full preset categories */}
+            {searchQuery.trim() ? (
+              <optgroup label={`"${searchQuery}" 검색 결과`} className="bg-zinc-950 text-sky-400 font-semibold text-[11px] py-1">
+                {devicePresets
+                  .filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((dev) => (
+                    <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-normal font-sans text-xs">
+                      {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
+                    </option>
+                  ))
+                }
+                {devicePresets.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                  <option disabled className="bg-zinc-950 text-zinc-500 text-xs">
+                    로컬 프리셋에 일치하는 모델 없음 (우측 'AI 검색'을 눌러보세요)
+                  </option>
+                )}
+              </optgroup>
+            ) : (
+              <>
+                {devicePresets.some(d => !d.id.startsWith('iphone-') && !d.id.startsWith('galaxy-')) && (
+                  <optgroup label="✨ 최근 검색 / 사용자 기기" className="bg-zinc-950 text-amber-400 font-semibold text-[11px] py-1">
+                    {devicePresets
+                      .filter(d => !d.id.startsWith('iphone-') && !d.id.startsWith('galaxy-'))
+                      .map((dev) => (
+                        <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-normal font-sans text-xs">
+                          {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
+                        </option>
+                      ))}
+                  </optgroup>
+                )}
+                
+                <optgroup label="Apple iPhone" className="bg-zinc-950 text-sky-400 font-semibold text-[11px] py-1">
+                  {devicePresets.filter(d => d.id.startsWith('iphone-')).map((dev) => (
+                    <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-normal font-sans text-xs">
+                      {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
+                    </option>
+                  ))}
+                </optgroup>
+                
+                <optgroup label="Samsung Galaxy S" className="bg-zinc-950 text-emerald-400 font-semibold text-[11px] py-1">
+                  {devicePresets.filter(d => d.id.startsWith('galaxy-')).map((dev) => (
+                    <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-normal font-sans text-xs">
+                      {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
+                    </option>
+                  ))}
+                </optgroup>
+              </>
+            )}
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-zinc-400">
             <Smartphone size={13} className="stroke-[2.5]" />

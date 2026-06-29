@@ -7,10 +7,22 @@ import SidebarControls from './components/SidebarControls';
 
 export default function App() {
   // 1. Initial State Definitions
+  const [devicePresets, setDevicePresets] = useState<DevicePreset[]>(DEVICE_PRESETS);
   const [selectedDevice, setSelectedDevice] = useState<DevicePreset>(
     DEVICE_PRESETS.find(d => d.id === 'iphone-16-16e') || DEVICE_PRESETS[7]
   );
   const [imageUrl, setImageUrl] = useState<string>(PRESET_IMAGES[0].url);
+
+  const handleAddCustomDevice = (device: DevicePreset) => {
+    setDevicePresets(prev => {
+      const exists = prev.some(d => d.id === device.id);
+      if (exists) {
+        return prev.map(d => d.id === device.id ? device : d);
+      }
+      return [...prev, device];
+    });
+    setSelectedDevice(device);
+  };
   
   const [imageSettings, setImageSettings] = useState<ImageSettings>({
     scale: 1.0,
@@ -579,6 +591,8 @@ export default function App() {
             imageUrl={imageUrl}
             selectedDevice={selectedDevice}
             onChangeDevice={setSelectedDevice}
+            devicePresets={devicePresets}
+            onAddCustomDevice={handleAddCustomDevice}
           />
         </div>
 
