@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Smartphone, Sparkles, RefreshCw, Layers, Sliders, Palette, HelpCircle, FileText, CheckCircle2 } from 'lucide-react';
-import { ImageSettings, FilterSettings, MockupOverlay } from './types';
-import { PRESET_IMAGES, CLOCK_FONTS } from './presets';
+import { ImageSettings, FilterSettings, MockupOverlay, DevicePreset } from './types';
+import { PRESET_IMAGES, CLOCK_FONTS, DEVICE_PRESETS } from './presets';
 import PhoneMockup from './components/PhoneMockup';
 import SidebarControls from './components/SidebarControls';
 
 export default function App() {
   // 1. Initial State Definitions
+  const [selectedDevice, setSelectedDevice] = useState<DevicePreset>(
+    DEVICE_PRESETS.find(d => d.id === 'iphone-16-16e') || DEVICE_PRESETS[7]
+  );
   const [imageUrl, setImageUrl] = useState<string>(PRESET_IMAGES[0].url);
   
   const [imageSettings, setImageSettings] = useState<ImageSettings>({
@@ -174,9 +177,15 @@ export default function App() {
         return;
       }
 
+      const targetW = selectedDevice.width;
+      const targetH = selectedDevice.height;
+
+      const rx = targetW / 1179;
+      const ry = targetH / 2556;
+
       const canvas = document.createElement('canvas');
-      canvas.width = 1179;
-      canvas.height = 2556;
+      canvas.width = targetW;
+      canvas.height = targetH;
       const ctx = canvas.getContext('2d');
       if (!ctx) {
         reject(new Error('Canvas 2D context could not be initialized'));
@@ -193,56 +202,56 @@ export default function App() {
           if (imageSettings.fitMode === 'contain') {
             if (imageSettings.bgStyle === 'color') {
               ctx.fillStyle = imageSettings.bgColor;
-              ctx.fillRect(0, 0, 1179, 2556);
+              ctx.fillRect(0, 0, targetW, targetH);
             } else if (imageSettings.bgStyle === 'gradient') {
-              const grad = ctx.createLinearGradient(0, 0, 1179, 2556);
+              const grad = ctx.createLinearGradient(0, 0, targetW, targetH);
               grad.addColorStop(0, imageSettings.bgGradientStart);
               grad.addColorStop(1, imageSettings.bgGradientEnd);
               ctx.fillStyle = grad;
-              ctx.fillRect(0, 0, 1179, 2556);
+              ctx.fillRect(0, 0, targetW, targetH);
             } else if (imageSettings.bgStyle === 'blur') {
               ctx.save();
               // Native high-res canvas filter blur
-              ctx.filter = `blur(${imageSettings.bgBlurAmount * (2556 / 580)}px) brightness(0.65) saturate(1.2)`;
-              ctx.drawImage(img, -200, -200, 1179 + 400, 2556 + 400);
+              ctx.filter = `blur(${imageSettings.bgBlurAmount * (targetH / 580)}px) brightness(0.65) saturate(1.2)`;
+              ctx.drawImage(img, -200 * rx, -200 * ry, targetW + 400 * rx, targetH + 400 * ry);
               ctx.restore();
               ctx.filter = 'none';
             }
           } else {
             // Fill background with black in Cover to avoid side gaps
             ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, 1179, 2556);
+            ctx.fillRect(0, 0, targetW, targetH);
           }
 
           // B. Draw Main Image with position, rotation, scale, and filters
           ctx.save();
 
           const imgAspect = img.naturalWidth / img.naturalHeight;
-          const screenAspect = 1179 / 2556;
-          let baseW = 1179;
-          let baseH = 2556;
+          const screenAspect = targetW / targetH;
+          let baseW = targetW;
+          let baseH = targetH;
 
           if (imageSettings.fitMode === 'cover') {
             if (imgAspect > screenAspect) {
-              baseH = 2556;
-              baseW = 2556 * imgAspect;
+              baseH = targetH;
+              baseW = targetH * imgAspect;
             } else {
-              baseW = 1179;
-              baseH = 1179 / imgAspect;
+              baseW = targetW;
+              baseH = targetW / imgAspect;
             }
           } else {
             // contain
             if (imgAspect > screenAspect) {
-              baseW = 1179;
-              baseH = 1179 / imgAspect;
+              baseW = targetW;
+              baseH = targetW / imgAspect;
             } else {
-              baseH = 2556;
-              baseW = 2556 * imgAspect;
+              baseH = targetH;
+              baseW = targetH * imgAspect;
             }
           }
 
           // Translate to center + dragging offsets
-          ctx.translate(1179 / 2 + imageSettings.xOffset, 2556 / 2 + imageSettings.yOffset);
+          ctx.translate(targetW / 2 + imageSettings.xOffset * rx, targetH / 2 + imageSettings.yOffset * ry);
           
           // Rotate
           ctx.rotate((imageSettings.rotation * Math.PI) / 180);
@@ -260,7 +269,7 @@ export default function App() {
             saturate(${filterSettings.saturation}%) 
             grayscale(${filterSettings.grayscale}%) 
             sepia(${filterSettings.sepia}%) 
-            blur(${filterSettings.blur * (2556 / 580)}px) 
+            blur(${filterSettings.blur * (targetH / 580)}px) 
             hue-rotate(${filterSettings.hueRotate}deg)
           `;
 
@@ -281,7 +290,7 @@ export default function App() {
             if (mockupSettings.showLockScreen && !mockupSettings.showHomeScreenIcons) {
               
               // Render Date
-              ctx.font = '500 48px sans-serif';
+              ctx.font = `500 ${Math.round(48 * rx)}px sans-serif`;
               let dateText = mockupSettings.customDateText;
               if (!dateText) {
                 const now = new Date();
@@ -291,44 +300,44 @@ export default function App() {
                 const dayName = days[now.getDay()];
                 dateText = `${month}월 ${date}일 ${dayName}`;
               }
-              ctx.fillText(dateText, 1179 / 2, 380);
+              ctx.fillText(dateText, targetW / 2, 380 * ry);
 
               // Render Big iOS 18 Clock
-              let canvasFont = 'bold 220px sans-serif';
+              let canvasFont = `bold ${Math.round(220 * rx)}px sans-serif`;
               if (mockupSettings.clockFont.includes('font-light')) {
-                canvasFont = '300 220px sans-serif';
+                canvasFont = `300 ${Math.round(220 * rx)}px sans-serif`;
               } else if (mockupSettings.clockFont.includes('font-serif')) {
-                canvasFont = '600 210px Georgia, serif';
+                canvasFont = `600 ${Math.round(210 * rx)}px Georgia, serif`;
               } else if (mockupSettings.clockFont.includes('font-mono')) {
-                canvasFont = '500 190px monospace';
+                canvasFont = `500 ${Math.round(190 * rx)}px monospace`;
               } else if (mockupSettings.clockFont.includes('font-display')) {
-                canvasFont = 'bold 220px "Space Grotesk", sans-serif';
+                canvasFont = `bold ${Math.round(220 * rx)}px "Space Grotesk", sans-serif`;
               }
               ctx.font = canvasFont;
-              ctx.fillText(mockupSettings.clockTime, 1179 / 2, 535);
+              ctx.fillText(mockupSettings.clockTime, targetW / 2, 535 * ry);
 
               // Flashlight Circular Overlay Shortcut
               ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
               ctx.beginPath();
-              ctx.arc(170, 2330, 75, 0, 2 * Math.PI);
+              ctx.arc(170 * rx, 2330 * ry, 75 * rx, 0, 2 * Math.PI);
               ctx.fill();
               ctx.fillStyle = '#ffffff';
-              ctx.font = '40px sans-serif';
-              ctx.fillText('💡', 170, 2330);
+              ctx.font = `${Math.round(40 * rx)}px sans-serif`;
+              ctx.fillText('💡', 170 * rx, 2330 * ry);
 
               // Center Swipe bar text
               ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-              ctx.font = '500 36px sans-serif';
-              ctx.fillText('쓸어올려서 열기', 1179 / 2, 2330);
+              ctx.font = `500 ${Math.round(36 * rx)}px sans-serif`;
+              ctx.fillText('쓸어올려서 열기', targetW / 2, 2330 * ry);
 
               // Camera Circular Overlay Shortcut
               ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
               ctx.beginPath();
-              ctx.arc(1179 - 170, 2330, 75, 0, 2 * Math.PI);
+              ctx.arc(targetW - 170 * rx, 2330 * ry, 75 * rx, 0, 2 * Math.PI);
               ctx.fill();
               ctx.fillStyle = '#ffffff';
-              ctx.font = '40px sans-serif';
-              ctx.fillText('📷', 1179 - 170, 2330);
+              ctx.font = `${Math.round(40 * rx)}px sans-serif`;
+              ctx.fillText('📷', targetW - 170 * rx, 2330 * ry);
             }
 
             // 2. Home Screen Apps Grid Overlay
@@ -344,11 +353,11 @@ export default function App() {
                 { name: '설정', color: '#6b7280', icon: '⚙️' },
               ];
 
-              const gridStartX = 180;
-              const gridStartY = 450;
-              const colWidth = 270;
-              const rowHeight = 250;
-              const iconSize = 170;
+              const gridStartX = 180 * rx;
+              const gridStartY = 450 * ry;
+              const colWidth = 270 * rx;
+              const rowHeight = 250 * ry;
+              const iconSize = 170 * rx;
 
               apps.forEach((app, idx) => {
                 const col = idx % 4;
@@ -358,37 +367,37 @@ export default function App() {
 
                 ctx.save();
                 ctx.fillStyle = app.color;
-                drawRoundedRect(ctx, x - iconSize / 2, y - iconSize / 2, iconSize, iconSize, 36);
+                drawRoundedRect(ctx, x - iconSize / 2, y - iconSize / 2, iconSize, iconSize, 36 * rx);
                 ctx.fill();
                 ctx.restore();
 
-                ctx.font = '80px sans-serif';
+                ctx.font = `${Math.round(80 * rx)}px sans-serif`;
                 ctx.fillText(app.icon, x, y);
 
                 ctx.fillStyle = '#ffffff';
-                ctx.font = '500 32px sans-serif';
-                ctx.fillText(app.name, x, y + iconSize / 2 + 40);
+                ctx.font = `500 ${Math.round(32 * rx)}px sans-serif`;
+                ctx.fillText(app.name, x, y + iconSize / 2 + 40 * ry);
               });
 
               // Bottom Dock Container
               ctx.save();
               ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-              drawRoundedRect(ctx, 80, 2060, 1179 - 160, 240, 60);
+              drawRoundedRect(ctx, 80 * rx, 2060 * ry, targetW - 160 * rx, 240 * ry, 60 * rx);
               ctx.fill();
 
               // Dock Apps
               const dockIcons = ['📞', '💬', '🌐', '🎵'];
-              const dockStartX = 200;
-              const dockSpacing = 260;
+              const dockStartX = 200 * rx;
+              const dockSpacing = 260 * rx;
               dockIcons.forEach((icon, idx) => {
                 const x = dockStartX + idx * dockSpacing;
-                const y = 2180;
+                const y = 2180 * ry;
                 
                 ctx.fillStyle = 'rgba(255,255,255,0.1)';
-                drawRoundedRect(ctx, x - iconSize / 2, y - iconSize / 2, iconSize, iconSize, 36);
+                drawRoundedRect(ctx, x - iconSize / 2, y - iconSize / 2, iconSize, iconSize, 36 * rx);
                 ctx.fill();
                 
-                ctx.font = '80px sans-serif';
+                ctx.font = `${Math.round(80 * rx)}px sans-serif`;
                 ctx.fillText(icon, x, y);
               });
               ctx.restore();
@@ -397,27 +406,32 @@ export default function App() {
             // 3. Status Bar Text & Icons
             if (mockupSettings.showStatusBar) {
               ctx.fillStyle = mockupSettings.clockColor;
-              ctx.font = '600 44px sans-serif';
+              ctx.font = `600 ${Math.round(44 * rx)}px sans-serif`;
               ctx.textAlign = 'left';
-              ctx.fillText(mockupSettings.clockTime, 140, 115);
+              ctx.fillText(mockupSettings.clockTime, 140 * rx, 115 * ry);
 
               // Signal representation
               ctx.textAlign = 'right';
-              ctx.font = '40px sans-serif';
-              ctx.fillText('📶  📶  🔋', 1179 - 140, 115);
+              ctx.font = `${Math.round(40 * rx)}px sans-serif`;
+              ctx.fillText('📶  📶  🔋', targetW - 140 * rx, 115 * ry);
             }
 
-            // 4. Dynamic Island Overlay
+            // 4. Notch / Dynamic Island Overlay on Export
             if (mockupSettings.showDynamicIsland) {
               ctx.fillStyle = '#000000';
-              drawRoundedRect(ctx, 1179 / 2 - 180, 50, 360, 100, 50);
-              ctx.fill();
+              if (selectedDevice.notchType === 'dynamic-island') {
+                drawRoundedRect(ctx, targetW / 2 - 180 * rx, 50 * ry, 360 * rx, 100 * ry, 50 * rx);
+                ctx.fill();
+              } else if (selectedDevice.notchType === 'notch') {
+                drawRoundedRect(ctx, targetW / 2 - 300 * rx, -10, 600 * rx, 100 * ry, 35 * rx);
+                ctx.fill();
+              }
             }
 
             // 5. Home Swipe Indicator
             if (mockupSettings.showHomeIndicator) {
               ctx.fillStyle = mockupSettings.clockColor;
-              drawRoundedRect(ctx, 1179 / 2 - 200, 2515, 400, 18, 9);
+              drawRoundedRect(ctx, targetW / 2 - 200 * rx, targetH - 41 * ry, 400 * rx, 18 * ry, 9 * rx);
               ctx.fill();
             }
 
@@ -436,7 +450,8 @@ export default function App() {
           const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
           const timeStr = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
           
-          downloadLink.download = `iPhone16e_wallpaper_${dateStr}_${timeStr}.${ext}`;
+          const sanitizedDeviceName = selectedDevice.name.replace(/[^a-zA-Z0-9]/g, '_');
+          downloadLink.download = `${sanitizedDeviceName}_wallpaper_${dateStr}_${timeStr}.${ext}`;
           downloadLink.href = dataUrl;
           document.body.appendChild(downloadLink);
           downloadLink.click();
@@ -479,10 +494,10 @@ export default function App() {
     ctx.closePath();
   };
 
-  // Fixed visual dimensions for preview mapping (Height = 580px, Width = 267.4px, Scale Factor = 580/2556)
+  // Fixed visual dimensions for preview mapping (Height = 580px)
   const displayHeight = 580;
-  const displayWidth = 580 * (1179 / 2556); // 267.41px
-  const scaleFactor = 580 / 2556;
+  const displayWidth = displayHeight * (selectedDevice.width / selectedDevice.height);
+  const scaleFactor = displayHeight / selectedDevice.height;
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans flex flex-col justify-between">
@@ -502,11 +517,11 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-md sm:text-lg font-bold font-display tracking-tight text-white flex items-center gap-1.5">
-                iPhone 16e 배경화면 레졸루션 피터
-                <span className="text-[10px] font-mono bg-indigo-500/15 text-indigo-400 px-2.5 py-0.5 rounded-full border border-indigo-500/20">v1.0</span>
+                iPhone 만능 배경화면 레졸루션 피터
+                <span className="text-[10px] font-mono bg-indigo-500/15 text-indigo-400 px-2.5 py-0.5 rounded-full border border-indigo-500/20">v2.0</span>
               </h1>
               <p className="text-[11px] text-zinc-400 font-medium">
-                이미지를 삽입하면 아이폰 16e 스크린 규격 (1179 × 2556)에 최적화하여 가공해줍니다.
+                원하는 아이폰 기종을 선택하고 이미지를 삽입하면 해당 모델 스크린 규격에 초고화질 최적화하여 맞춤 가공해줍니다.
               </p>
             </div>
           </div>
@@ -539,6 +554,7 @@ export default function App() {
             scaleFactor={scaleFactor}
             displayWidth={displayWidth}
             displayHeight={displayHeight}
+            selectedDevice={selectedDevice}
           />
         </div>
 
@@ -556,6 +572,8 @@ export default function App() {
             onDownload={handleDownload}
             onResetAll={handleResetAll}
             imageUrl={imageUrl}
+            selectedDevice={selectedDevice}
+            onChangeDevice={setSelectedDevice}
           />
         </div>
 
@@ -574,7 +592,7 @@ export default function App() {
       {/* ================= FOOTER ================= */}
       <footer className="border-t border-zinc-900 bg-zinc-950/40 py-6 text-center text-[11px] text-zinc-500 space-y-2">
         <p className="font-mono">
-          iPhone 16e Specifications: 6.1" OLED Display • 1179 x 2556 px • 460 ppi • 19.5:9 Aspect Ratio
+          {selectedDevice.name} Specifications: {selectedDevice.screenSize} Display • {selectedDevice.width} x {selectedDevice.height} px {selectedDevice.ppi ? `• ${selectedDevice.ppi} ppi` : ''} • {selectedDevice.aspectRatio} Aspect Ratio
         </p>
         <p className="text-zinc-600">
           본 사이트는 클라이언트 사이드 단독 동작 솔루션으로 제작되어, 사용자의 개인 사진이 서버로 전송되지 않고 브라우저 내에서 안전하고 신속하게 처리됩니다.

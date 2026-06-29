@@ -4,8 +4,8 @@ import {
   RotateCcw, SlidersHorizontal, RefreshCw, FlipHorizontal, FlipVertical,
   Check, Eye, Sparkles, AlertCircle
 } from 'lucide-react';
-import { ImageSettings, FilterSettings, MockupOverlay, PresetImage } from '../types';
-import { PRESET_IMAGES, CLOCK_FONTS, PRESET_GRADIENTS } from '../presets';
+import { ImageSettings, FilterSettings, MockupOverlay, PresetImage, DevicePreset } from '../types';
+import { PRESET_IMAGES, CLOCK_FONTS, PRESET_GRADIENTS, DEVICE_PRESETS } from '../presets';
 
 interface SidebarControlsProps {
   imageSettings: ImageSettings;
@@ -19,6 +19,8 @@ interface SidebarControlsProps {
   onDownload: (includeOverlay: boolean, format: 'png' | 'jpeg') => void;
   onResetAll: () => void;
   imageUrl: string;
+  selectedDevice: DevicePreset;
+  onChangeDevice: (device: DevicePreset) => void;
 }
 
 export default function SidebarControls({
@@ -32,7 +34,9 @@ export default function SidebarControls({
   onSelectPreset,
   onDownload,
   onResetAll,
-  imageUrl
+  imageUrl,
+  selectedDevice,
+  onChangeDevice
 }: SidebarControlsProps) {
   const [activeTab, setActiveTab] = useState<'source' | 'adjust' | 'style' | 'overlay'>('source');
   const [exportFormat, setExportFormat] = useState<'png' | 'jpeg'>('png');
@@ -89,6 +93,57 @@ export default function SidebarControls({
   return (
     <div className="flex flex-col h-full bg-zinc-950/40 rounded-3xl border border-zinc-800/80 shadow-2xl backdrop-blur-md overflow-hidden">
       
+      {/* iPhone Model Selection Header Card */}
+      <div className="bg-zinc-900/40 border-b border-zinc-800/80 p-4 flex flex-col gap-2.5">
+        <div className="flex items-center justify-between">
+          <label className="text-xs font-bold tracking-tight text-zinc-300 flex items-center gap-1.5">
+            <Smartphone size={14} className="text-sky-400" />
+            대상 아이폰 모델 선택
+          </label>
+          <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 border border-sky-500/15 px-2 py-0.5 rounded">
+            {selectedDevice.width} × {selectedDevice.height} px
+          </span>
+        </div>
+        
+        <div className="relative">
+          <select
+            value={selectedDevice.id}
+            onChange={(e) => {
+              const found = DEVICE_PRESETS.find(d => d.id === e.target.value);
+              if (found) onChangeDevice(found);
+            }}
+            className="w-full bg-zinc-950 border border-zinc-800 text-zinc-100 px-3.5 py-2.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 appearance-none cursor-pointer"
+          >
+            {DEVICE_PRESETS.map((dev) => (
+              <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-sans">
+                {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-zinc-400">
+            <Smartphone size={13} className="stroke-[2.5]" />
+          </div>
+        </div>
+
+        {/* Selected device detail pills */}
+        <div className="flex flex-wrap gap-1.5 mt-0.5">
+          <span className="text-[9px] font-mono font-medium text-zinc-400 bg-zinc-900/80 border border-zinc-800/50 px-2 py-0.5 rounded">
+            {selectedDevice.screenSize} Display
+          </span>
+          <span className="text-[9px] font-mono font-medium text-zinc-400 bg-zinc-900/80 border border-zinc-800/50 px-2 py-0.5 rounded">
+            {selectedDevice.aspectRatio} Ratio
+          </span>
+          {selectedDevice.ppi && (
+            <span className="text-[9px] font-mono font-medium text-zinc-400 bg-zinc-900/80 border border-zinc-800/50 px-2 py-0.5 rounded">
+              {selectedDevice.ppi} ppi
+            </span>
+          )}
+          <span className="text-[9px] font-mono font-medium text-zinc-400 bg-zinc-900/80 border border-zinc-800/50 px-2 py-0.5 rounded">
+            Notch: {selectedDevice.notchType === 'dynamic-island' ? 'Dynamic Island' : selectedDevice.notchType === 'notch' ? 'Notch' : 'None'}
+          </span>
+        </div>
+      </div>
+      
       {/* Tab Navigation Menu */}
       <div className="flex border-b border-zinc-800/80 bg-zinc-950/60 p-2 gap-1">
         {[
@@ -129,7 +184,7 @@ export default function SidebarControls({
                 이미지 삽입 (Upload & Select)
               </h3>
               <p className="text-xs text-zinc-400 mt-1">
-                아이폰 16e에 맞출 이미지를 업로드하거나, 준비된 배경화면을 시험 삼아 선택해보세요.
+                선택한 {selectedDevice.name}에 맞출 이미지를 업로드하거나, 준비된 배경화면을 시험 삼아 선택해보세요.
               </p>
             </div>
 

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Wifi, Battery, Signal, Camera, Lightbulb, Smartphone } from 'lucide-react';
-import { ImageSettings, FilterSettings, MockupOverlay } from '../types';
+import { ImageSettings, FilterSettings, MockupOverlay, DevicePreset } from '../types';
 
 interface PhoneMockupProps {
   imageUrl: string;
@@ -11,6 +11,7 @@ interface PhoneMockupProps {
   scaleFactor: number;
   displayWidth: number;
   displayHeight: number;
+  selectedDevice: DevicePreset;
 }
 
 export default function PhoneMockup({
@@ -21,7 +22,8 @@ export default function PhoneMockup({
   onChangeSettings,
   scaleFactor,
   displayWidth,
-  displayHeight
+  displayHeight,
+  selectedDevice
 }: PhoneMockupProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [imgDimensions, setImgDimensions] = useState({ width: 0, height: 0 });
@@ -45,7 +47,7 @@ export default function PhoneMockup({
   
   if (imgDimensions.width > 0 && imgDimensions.height > 0) {
     const imgAspect = imgDimensions.width / imgDimensions.height;
-    const screenAspect = 1179 / 2556;
+    const screenAspect = selectedDevice.width / selectedDevice.height;
 
     if (imageSettings.fitMode === 'cover') {
       if (imgAspect > screenAspect) {
@@ -248,14 +250,25 @@ export default function PhoneMockup({
                 </div>
               )}
 
-              {/* Center: Dynamic Island */}
-              {mockupSettings.showDynamicIsland && (
+              {/* Center: Notch / Dynamic Island */}
+              {mockupSettings.showDynamicIsland && selectedDevice.notchType === 'dynamic-island' && (
                 <div 
                   id="dynamic-island"
                   className="absolute left-1/2 -translate-x-1/2 top-2.5 w-[86px] h-6 bg-black rounded-full border border-zinc-800/50 shadow-lg flex items-center justify-between px-3 transition-all duration-300 pointer-events-auto hover:w-[120px] hover:h-8 group cursor-pointer"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-zinc-900 group-hover:bg-amber-400/80 transition-colors"></div>
                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-950 group-hover:bg-indigo-500/80 transition-colors"></div>
+                </div>
+              )}
+
+              {mockupSettings.showDynamicIsland && selectedDevice.notchType === 'notch' && (
+                <div 
+                  id="notch"
+                  className="absolute left-1/2 -translate-x-1/2 top-0 w-[130px] h-5 bg-black rounded-b-xl border-x border-b border-zinc-900/50 shadow-md flex items-center justify-center pointer-events-auto"
+                >
+                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-950/90 border border-zinc-900 flex items-center justify-center">
+                    <div className="w-1 h-1 rounded-full bg-indigo-900"></div>
+                  </div>
                 </div>
               )}
 
@@ -289,7 +302,7 @@ export default function PhoneMockup({
                 
                 {/* Visual Widget Space Spacer */}
                 <div className="mt-2.5 px-3 py-1 bg-black/15 backdrop-blur-[2px] rounded-xl text-[9px] text-white/70 font-medium drop-shadow flex items-center gap-1 border border-white/5">
-                  <Smartphone size={10} /> iPhone 16e 6.1" (1179×2556)
+                  <Smartphone size={10} /> {selectedDevice.name} {selectedDevice.screenSize} ({selectedDevice.width}×{selectedDevice.height})
                 </div>
               </div>
             )}
@@ -373,7 +386,7 @@ export default function PhoneMockup({
       {/* Screen diagonal / details subtitle under the phone */}
       <div className="mt-4 flex flex-col items-center gap-1 text-center">
         <span className="text-[11px] font-mono bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded-full border border-zinc-700 shadow">
-          iPhone 16e Screen Mockup — 1179 × 2556 (19.5:9 Ratio)
+          {selectedDevice.name} Screen Mockup — {selectedDevice.width} × {selectedDevice.height} ({selectedDevice.aspectRatio} Ratio)
         </span>
         <span className="text-[10px] text-zinc-500">
           마우스나 손가락으로 화면 안을 드래그하여 배경화면 위치를 맞출 수 있습니다.

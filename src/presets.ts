@@ -1,4 +1,4 @@
-import { PresetImage } from './types';
+import { PresetImage, DevicePreset } from './types';
 
 export const PRESET_IMAGES: PresetImage[] = [
   {
@@ -48,3 +48,264 @@ export const PRESET_GRADIENTS = [
   { name: '네온 코랄', start: '#ff416c', end: '#ff4b2b' },
   { name: '심해수', start: '#12c2e9', end: '#c471ed' }
 ];
+
+export const DEVICE_PRESETS: DevicePreset[] = [
+  // --- iPhone 17 Series ---
+  {
+    id: 'iphone-17-pro-max',
+    name: 'iPhone 17 Pro Max',
+    width: 1320,
+    height: 2868,
+    aspectRatio: '19.5:9',
+    screenSize: '6.9"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-17-pro',
+    name: 'iPhone 17 Pro',
+    width: 1206,
+    height: 2622,
+    aspectRatio: '19.5:9',
+    screenSize: '6.3"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-17',
+    name: 'iPhone 17',
+    width: 1206,
+    height: 2622,
+    aspectRatio: '19.5:9',
+    screenSize: '6.3"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-17-slim',
+    name: 'iPhone 17 Slim / Air',
+    width: 1206,
+    height: 2622,
+    aspectRatio: '19.5:9',
+    screenSize: '6.6"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  // --- iPhone 16 Series ---
+  {
+    id: 'iphone-16-pro-max',
+    name: 'iPhone 16 Pro Max',
+    width: 1320,
+    height: 2868,
+    aspectRatio: '19.5:9',
+    screenSize: '6.9"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-16-pro',
+    name: 'iPhone 16 Pro',
+    width: 1206,
+    height: 2622,
+    aspectRatio: '19.5:9',
+    screenSize: '6.3"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-16-plus',
+    name: 'iPhone 16 Plus',
+    width: 1290,
+    height: 2796,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-16-16e',
+    name: 'iPhone 16 / 16e',
+    width: 1179,
+    height: 2556,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  // --- iPhone 15 Series ---
+  {
+    id: 'iphone-15-pro-max',
+    name: 'iPhone 15 Pro Max',
+    width: 1290,
+    height: 2796,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-15-pro',
+    name: 'iPhone 15 Pro',
+    width: 1179,
+    height: 2556,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'dynamic-island',
+    ppi: 461
+  },
+  {
+    id: 'iphone-15-plus',
+    name: 'iPhone 15 Plus',
+    width: 1290,
+    height: 2796,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-15',
+    name: 'iPhone 15',
+    width: 1179,
+    height: 2556,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  // --- iPhone 14 Series ---
+  {
+    id: 'iphone-14-pro-max',
+    name: 'iPhone 14 Pro Max',
+    width: 1290,
+    height: 2796,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-14-pro',
+    name: 'iPhone 14 Pro',
+    width: 1179,
+    height: 2556,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'dynamic-island',
+    ppi: 460
+  },
+  {
+    id: 'iphone-14-plus',
+    name: 'iPhone 14 Plus',
+    width: 1284,
+    height: 2778,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'notch',
+    ppi: 458
+  },
+  {
+    id: 'iphone-14',
+    name: 'iPhone 14',
+    width: 1170,
+    height: 2532,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'notch',
+    ppi: 460
+  },
+  // --- iPhone 13 Series ---
+  {
+    id: 'iphone-13-pro-max',
+    name: 'iPhone 13 Pro Max',
+    width: 1284,
+    height: 2778,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'notch',
+    ppi: 458
+  },
+  {
+    id: 'iphone-13-13-pro',
+    name: 'iPhone 13 / 13 Pro',
+    width: 1170,
+    height: 2532,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'notch',
+    ppi: 460
+  },
+  {
+    id: 'iphone-13-mini',
+    name: 'iPhone 13 mini',
+    width: 1080,
+    height: 2340,
+    aspectRatio: '19.5:9',
+    screenSize: '5.4"',
+    notchType: 'notch',
+    ppi: 476
+  },
+  // --- iPhone 12 Series ---
+  {
+    id: 'iphone-12-pro-max',
+    name: 'iPhone 12 Pro Max',
+    width: 1284,
+    height: 2778,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'notch',
+    ppi: 458
+  },
+  {
+    id: 'iphone-12-12-pro',
+    name: 'iPhone 12 / 12 Pro',
+    width: 1170,
+    height: 2532,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'notch',
+    ppi: 460
+  },
+  {
+    id: 'iphone-12-mini',
+    name: 'iPhone 12 mini',
+    width: 1080,
+    height: 2340,
+    aspectRatio: '19.5:9',
+    screenSize: '5.4"',
+    notchType: 'notch',
+    ppi: 476
+  },
+  // --- iPhone 11 Series ---
+  {
+    id: 'iphone-11-pro-max',
+    name: 'iPhone 11 Pro Max / XS Max',
+    width: 1242,
+    height: 2688,
+    aspectRatio: '19.5:9',
+    screenSize: '6.5"',
+    notchType: 'notch',
+    ppi: 458
+  },
+  {
+    id: 'iphone-11-pro',
+    name: 'iPhone 11 Pro / XS / X',
+    width: 1125,
+    height: 2436,
+    aspectRatio: '19.5:9',
+    screenSize: '5.8"',
+    notchType: 'notch',
+    ppi: 458
+  },
+  {
+    id: 'iphone-11-xr',
+    name: 'iPhone 11 / XR',
+    width: 828,
+    height: 1792,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'notch',
+    ppi: 326
+  }
+];
+

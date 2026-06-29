@@ -46,3 +46,15 @@ export interface PresetImage {
   url: string;
   description: string;
 }
+
+export interface DevicePreset {
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  aspectRatio: string;
+  screenSize: string;
+  notchType: 'notch' | 'dynamic-island' | 'none';
+  ppi?: number;
+}
+
