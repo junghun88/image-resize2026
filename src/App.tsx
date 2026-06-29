@@ -328,7 +328,8 @@ export default function App() {
               // Center Swipe bar text
               ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
               ctx.font = `500 ${Math.round(36 * rx)}px sans-serif`;
-              ctx.fillText('쓸어올려서 열기', targetW / 2, 2330 * ry);
+              const swipeText = selectedDevice.id.startsWith('galaxy-') ? '밀어서 잠금해제' : '쓸어올려서 열기';
+              ctx.fillText(swipeText, targetW / 2, 2330 * ry);
 
               // Camera Circular Overlay Shortcut
               ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
@@ -416,7 +417,7 @@ export default function App() {
               ctx.fillText('📶  📶  🔋', targetW - 140 * rx, 115 * ry);
             }
 
-            // 4. Notch / Dynamic Island Overlay on Export
+            // 4. Notch / Dynamic Island / Punch Hole Overlay on Export
             if (mockupSettings.showDynamicIsland) {
               ctx.fillStyle = '#000000';
               if (selectedDevice.notchType === 'dynamic-island') {
@@ -424,6 +425,10 @@ export default function App() {
                 ctx.fill();
               } else if (selectedDevice.notchType === 'notch') {
                 drawRoundedRect(ctx, targetW / 2 - 300 * rx, -10, 600 * rx, 100 * ry, 35 * rx);
+                ctx.fill();
+              } else if (selectedDevice.notchType === 'punch-hole') {
+                ctx.beginPath();
+                ctx.arc(targetW / 2, 75 * ry, 20 * rx, 0, 2 * Math.PI);
                 ctx.fill();
               }
             }
@@ -517,11 +522,11 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-md sm:text-lg font-bold font-display tracking-tight text-white flex items-center gap-1.5">
-                iPhone 만능 배경화면 레졸루션 피터
-                <span className="text-[10px] font-mono bg-indigo-500/15 text-indigo-400 px-2.5 py-0.5 rounded-full border border-indigo-500/20">v2.0</span>
+                아이폰 & 갤럭시 만능 배경화면 레졸루션 피터
+                <span className="text-[10px] font-mono bg-indigo-500/15 text-indigo-400 px-2.5 py-0.5 rounded-full border border-indigo-500/20">v2.5</span>
               </h1>
               <p className="text-[11px] text-zinc-400 font-medium">
-                원하는 아이폰 기종을 선택하고 이미지를 삽입하면 해당 모델 스크린 규격에 초고화질 최적화하여 맞춤 가공해줍니다.
+                원하는 기종(iPhone / Galaxy)을 선택하고 이미지를 삽입하면 해당 모델 스크린 규격에 초고화질 최적화하여 맞춤 가공해줍니다.
               </p>
             </div>
           </div>

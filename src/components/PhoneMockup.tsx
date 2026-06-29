@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Wifi, Battery, Signal, Camera, Lightbulb, Smartphone } from 'lucide-react';
+import { Wifi, Battery, Signal, Camera, Lightbulb, Smartphone, Fingerprint } from 'lucide-react';
 import { ImageSettings, FilterSettings, MockupOverlay, DevicePreset } from '../types';
 
 interface PhoneMockupProps {
@@ -272,6 +272,15 @@ export default function PhoneMockup({
                 </div>
               )}
 
+              {mockupSettings.showDynamicIsland && selectedDevice.notchType === 'punch-hole' && (
+                <div 
+                  id="punch-hole"
+                  className="absolute left-1/2 -translate-x-1/2 top-2.5 w-3.5 h-3.5 bg-black rounded-full border border-zinc-800/15 flex items-center justify-center pointer-events-auto shadow"
+                >
+                  <div className="w-1 h-1 rounded-full bg-zinc-950"></div>
+                </div>
+              )}
+
               {/* Right: Signal / Wifi / Battery */}
               {mockupSettings.showStatusBar && (
                 <div className="w-14 flex items-center justify-end gap-1" style={statusColorStyle}>
@@ -356,9 +365,18 @@ export default function PhoneMockup({
                     <Lightbulb size={17} strokeWidth={2.2} />
                   </div>
                   {/* Swipe Guide Text */}
-                  <span className="text-[10px] font-medium text-white/60 tracking-wider drop-shadow select-none">
-                    쓸어올려서 열기
-                  </span>
+                  {selectedDevice.id.startsWith('galaxy-') ? (
+                    <div className="flex flex-col items-center gap-0.5 select-none scale-[0.85] origin-center -translate-y-2">
+                      <Fingerprint size={24} className="text-white/80 animate-pulse drop-shadow" />
+                      <span className="text-[8px] font-medium text-white/50 tracking-wider">
+                        지문인식 또는 밀어서 잠금해제
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-[10px] font-medium text-white/60 tracking-wider drop-shadow select-none">
+                      쓸어올려서 열기
+                    </span>
+                  )}
                   {/* Camera */}
                   <div className="w-[38px] h-[38px] bg-black/40 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center shadow-lg active:bg-white active:text-black transition-colors cursor-pointer">
                     <Camera size={17} strokeWidth={2.2} />

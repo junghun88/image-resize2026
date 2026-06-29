@@ -54,7 +54,7 @@ export interface DevicePreset {
   height: number;
   aspectRatio: string;
   screenSize: string;
-  notchType: 'notch' | 'dynamic-island' | 'none';
+  notchType: 'notch' | 'dynamic-island' | 'punch-hole' | 'none';
   ppi?: number;
 }
 

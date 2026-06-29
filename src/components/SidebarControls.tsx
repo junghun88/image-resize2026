@@ -93,12 +93,12 @@ export default function SidebarControls({
   return (
     <div className="flex flex-col h-full bg-zinc-950/40 rounded-3xl border border-zinc-800/80 shadow-2xl backdrop-blur-md overflow-hidden">
       
-      {/* iPhone Model Selection Header Card */}
+      {/* Smartphone Model Selection Header Card */}
       <div className="bg-zinc-900/40 border-b border-zinc-800/80 p-4 flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold tracking-tight text-zinc-300 flex items-center gap-1.5">
             <Smartphone size={14} className="text-sky-400" />
-            대상 아이폰 모델 선택
+            대상 스마트폰 모델 선택
           </label>
           <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 border border-sky-500/15 px-2 py-0.5 rounded">
             {selectedDevice.width} × {selectedDevice.height} px
@@ -114,11 +114,20 @@ export default function SidebarControls({
             }}
             className="w-full bg-zinc-950 border border-zinc-800 text-zinc-100 px-3.5 py-2.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 appearance-none cursor-pointer"
           >
-            {DEVICE_PRESETS.map((dev) => (
-              <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-sans">
-                {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
-              </option>
-            ))}
+            <optgroup label="Apple iPhone" className="bg-zinc-950 text-sky-400 font-semibold text-[11px] py-1">
+              {DEVICE_PRESETS.filter(d => d.id.startsWith('iphone-')).map((dev) => (
+                <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-normal font-sans text-xs">
+                  {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Samsung Galaxy S" className="bg-zinc-950 text-emerald-400 font-semibold text-[11px] py-1">
+              {DEVICE_PRESETS.filter(d => d.id.startsWith('galaxy-')).map((dev) => (
+                <option key={dev.id} value={dev.id} className="bg-zinc-950 text-zinc-100 font-normal font-sans text-xs">
+                  {dev.name} ({dev.screenSize}, {dev.width}×{dev.height})
+                </option>
+              ))}
+            </optgroup>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-zinc-400">
             <Smartphone size={13} className="stroke-[2.5]" />
@@ -139,7 +148,7 @@ export default function SidebarControls({
             </span>
           )}
           <span className="text-[9px] font-mono font-medium text-zinc-400 bg-zinc-900/80 border border-zinc-800/50 px-2 py-0.5 rounded">
-            Notch: {selectedDevice.notchType === 'dynamic-island' ? 'Dynamic Island' : selectedDevice.notchType === 'notch' ? 'Notch' : 'None'}
+            Camera/Notch: {selectedDevice.notchType === 'dynamic-island' ? 'Dynamic Island' : selectedDevice.notchType === 'notch' ? 'Notch' : selectedDevice.notchType === 'punch-hole' ? 'Punch Hole' : 'None'}
           </span>
         </div>
       </div>

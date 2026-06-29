@@ -306,6 +306,204 @@ export const DEVICE_PRESETS: DevicePreset[] = [
     screenSize: '6.1"',
     notchType: 'notch',
     ppi: 326
+  },
+  // ==========================================
+  // --- Galaxy S25 Series ---
+  // ==========================================
+  {
+    id: 'galaxy-s25-ultra',
+    name: 'Galaxy S25 Ultra',
+    width: 1440,
+    height: 3120,
+    aspectRatio: '19.5:9',
+    screenSize: '6.9"',
+    notchType: 'punch-hole',
+    ppi: 505
+  },
+  {
+    id: 'galaxy-s25-plus',
+    name: 'Galaxy S25+',
+    width: 1440,
+    height: 3120,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'punch-hole',
+    ppi: 513
+  },
+  {
+    id: 'galaxy-s25',
+    name: 'Galaxy S25',
+    width: 1080,
+    height: 2340,
+    aspectRatio: '19.5:9',
+    screenSize: '6.2"',
+    notchType: 'punch-hole',
+    ppi: 416
+  },
+  // ==========================================
+  // --- Galaxy S24 Series ---
+  // ==========================================
+  {
+    id: 'galaxy-s24-ultra',
+    name: 'Galaxy S24 Ultra',
+    width: 1440,
+    height: 3120,
+    aspectRatio: '19.5:9',
+    screenSize: '6.8"',
+    notchType: 'punch-hole',
+    ppi: 505
+  },
+  {
+    id: 'galaxy-s24-plus',
+    name: 'Galaxy S24+',
+    width: 1440,
+    height: 3120,
+    aspectRatio: '19.5:9',
+    screenSize: '6.7"',
+    notchType: 'punch-hole',
+    ppi: 513
+  },
+  {
+    id: 'galaxy-s24',
+    name: 'Galaxy S24',
+    width: 1080,
+    height: 2340,
+    aspectRatio: '19.5:9',
+    screenSize: '6.2"',
+    notchType: 'punch-hole',
+    ppi: 416
+  },
+  // ==========================================
+  // --- Galaxy S23 Series ---
+  // ==========================================
+  {
+    id: 'galaxy-s23-ultra',
+    name: 'Galaxy S23 Ultra',
+    width: 1440,
+    height: 3088,
+    aspectRatio: '19.3:9',
+    screenSize: '6.8"',
+    notchType: 'punch-hole',
+    ppi: 500
+  },
+  {
+    id: 'galaxy-s23-plus',
+    name: 'Galaxy S23+',
+    width: 1080,
+    height: 2340,
+    aspectRatio: '19.5:9',
+    screenSize: '6.6"',
+    notchType: 'punch-hole',
+    ppi: 393
+  },
+  {
+    id: 'galaxy-s23',
+    name: 'Galaxy S23',
+    width: 1080,
+    height: 2340,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'punch-hole',
+    ppi: 425
+  },
+  // ==========================================
+  // --- Galaxy S22 Series ---
+  // ==========================================
+  {
+    id: 'galaxy-s22-ultra',
+    name: 'Galaxy S22 Ultra',
+    width: 1440,
+    height: 3088,
+    aspectRatio: '19.3:9',
+    screenSize: '6.8"',
+    notchType: 'punch-hole',
+    ppi: 500
+  },
+  {
+    id: 'galaxy-s22-plus',
+    name: 'Galaxy S22+',
+    width: 1080,
+    height: 2340,
+    aspectRatio: '19.5:9',
+    screenSize: '6.6"',
+    notchType: 'punch-hole',
+    ppi: 393
+  },
+  {
+    id: 'galaxy-s22',
+    name: 'Galaxy S22',
+    width: 1080,
+    height: 2340,
+    aspectRatio: '19.5:9',
+    screenSize: '6.1"',
+    notchType: 'punch-hole',
+    ppi: 425
+  },
+  // ==========================================
+  // --- Galaxy S21 Series ---
+  // ==========================================
+  {
+    id: 'galaxy-s21-ultra',
+    name: 'Galaxy S21 Ultra',
+    width: 1440,
+    height: 3200,
+    aspectRatio: '20:9',
+    screenSize: '6.8"',
+    notchType: 'punch-hole',
+    ppi: 515
+  },
+  {
+    id: 'galaxy-s21-plus',
+    name: 'Galaxy S21+',
+    width: 1080,
+    height: 2400,
+    aspectRatio: '20:9',
+    screenSize: '6.7"',
+    notchType: 'punch-hole',
+    ppi: 394
+  },
+  {
+    id: 'galaxy-s21',
+    name: 'Galaxy S21 / S21 FE',
+    width: 1080,
+    height: 2400,
+    aspectRatio: '20:9',
+    screenSize: '6.2"',
+    notchType: 'punch-hole',
+    ppi: 421
+  },
+  // ==========================================
+  // --- Galaxy S20 Series ---
+  // ==========================================
+  {
+    id: 'galaxy-s20-ultra',
+    name: 'Galaxy S20 Ultra',
+    width: 1440,
+    height: 3200,
+    aspectRatio: '20:9',
+    screenSize: '6.9"',
+    notchType: 'punch-hole',
+    ppi: 511
+  },
+  {
+    id: 'galaxy-s20-plus',
+    name: 'Galaxy S20+',
+    width: 1440,
+    height: 3200,
+    aspectRatio: '20:9',
+    screenSize: '6.7"',
+    notchType: 'punch-hole',
+    ppi: 525
+  },
+  {
+    id: 'galaxy-s20',
+    name: 'Galaxy S20',
+    width: 1440,
+    height: 3200,
+    aspectRatio: '20:9',
+    screenSize: '6.2"',
+    notchType: 'punch-hole',
+    ppi: 563
   }
 ];
 
