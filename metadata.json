@@ -1,0 +1,6 @@
+{
+  "name": "iPhone 16e Screen Resizer",
+  "description": "Upload and adjust any image to perfectly fit the native 1179 x 2556 screen resolution of the iPhone 16e, complete with live mockups and filter options.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
