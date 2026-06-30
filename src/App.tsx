@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Smartphone, Sparkles, RefreshCw, Layers, Sliders, Palette, HelpCircle, FileText, CheckCircle2 } from 'lucide-react';
+import { Smartphone, Sparkles, RefreshCw, Layers, Sliders, Palette, HelpCircle, FileText, CheckCircle2, Cat } from 'lucide-react';
 import { ImageSettings, FilterSettings, MockupOverlay, DevicePreset } from './types';
 import { PRESET_IMAGES, CLOCK_FONTS, DEVICE_PRESETS } from './presets';
 import PhoneMockup from './components/PhoneMockup';
 import SidebarControls from './components/SidebarControls';
+import AnimalFaceTest from './components/AnimalFaceTest';
 
 export default function App() {
+  // 0. Application Tab Navigation State ('wallpaper' or 'animal')
+  const [activeAppTab, setActiveAppTab] = useState<'wallpaper' | 'animal'>('animal');
+
   // 1. Initial State Definitions
   const [devicePresets, setDevicePresets] = useState<DevicePreset[]>(DEVICE_PRESETS);
   const [selectedDevice, setSelectedDevice] = useState<DevicePreset>(
@@ -525,76 +529,108 @@ export default function App() {
 
       {/* ================= HEADER ================= */}
       <header className="border-b border-zinc-900 bg-zinc-950/60 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-5 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
           
           {/* Logo Brand Title */}
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-gradient-to-tr from-sky-500 to-indigo-600 rounded-2xl shadow-md text-white flex items-center justify-center">
-              <Smartphone size={22} className="stroke-[2.2]" />
+              {activeAppTab === 'wallpaper' ? (
+                <Smartphone size={22} className="stroke-[2.2]" />
+              ) : (
+                <Cat size={22} className="stroke-[2.2] text-rose-300" />
+              )}
             </div>
             <div>
               <h1 className="text-md sm:text-lg font-bold font-display tracking-tight text-white flex items-center gap-1.5">
-                아이폰 & 갤럭시 만능 배경화면 레졸루션 피터
-                <span className="text-[10px] font-mono bg-indigo-500/15 text-indigo-400 px-2.5 py-0.5 rounded-full border border-indigo-500/20">v2.5</span>
+                {activeAppTab === 'wallpaper' ? '만능 배경화면 레졸루션 피터' : '동물상 AI 테스트 (강아지 vs 고양이)'}
+                <span className="text-[10px] font-mono bg-indigo-500/15 text-indigo-400 px-2.5 py-0.5 rounded-full border border-indigo-500/20">v2.6</span>
               </h1>
               <p className="text-[11px] text-zinc-400 font-medium">
-                원하는 기종(iPhone / Galaxy)을 선택하고 이미지를 삽입하면 해당 모델 스크린 규격에 초고화질 최적화하여 맞춤 가공해줍니다.
+                {activeAppTab === 'wallpaper' 
+                  ? '원하는 기종을 선택하고 이미지를 삽입하면 해당 모델 스크린 규격에 초고화질 최적화하여 맞춤 가공해줍니다.' 
+                  : '티처블 머신(Teachable Machine) 딥러닝 신경망 모델을 이용해 나와 가장 잘 어울리는 동물상을 찾아보세요!'}
               </p>
             </div>
           </div>
 
-          {/* Quick Info & Resets */}
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={handleResetAll}
-              className="px-3.5 py-2 text-xs font-semibold bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl border border-zinc-800 flex items-center gap-1.5 transition-colors cursor-pointer"
+          {/* Interactive Navigation Tabs */}
+          <div className="flex items-center bg-zinc-900/80 p-1.5 rounded-xl border border-zinc-800 gap-1.5 shrink-0 shadow-inner">
+            <button
+              onClick={() => setActiveAppTab('animal')}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${activeAppTab === 'animal' ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}`}
             >
-              <RefreshCw size={13} />
-              설정 전체 초기화
+              <Cat size={13} />
+              동물상 AI 테스트
+            </button>
+            <button
+              onClick={() => setActiveAppTab('wallpaper')}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${activeAppTab === 'wallpaper' ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'}`}
+            >
+              <Smartphone size={13} />
+              배경화면 메이커
             </button>
           </div>
+
+          {/* Quick Info & Resets (Only shown in Wallpaper mode) */}
+          {activeAppTab === 'wallpaper' && (
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={handleResetAll}
+                className="px-3.5 py-2 text-xs font-semibold bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white rounded-xl border border-zinc-800 flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <RefreshCw size={13} />
+                설정 전체 초기화
+              </button>
+            </div>
+          )}
 
         </div>
       </header>
 
       {/* ================= MAIN SCREEN CONTAINER ================= */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-5 py-6 sm:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-5 py-6 sm:py-8">
         
-        {/* LEFT COLUMN: The Interactive Phone Mockup (cols: 5) */}
-        <div className="lg:col-span-5 flex flex-col items-center justify-center bg-zinc-900/30 p-6 rounded-3xl border border-zinc-900 shadow-xl backdrop-blur-sm self-stretch min-h-[660px]">
-          <PhoneMockup 
-            imageUrl={imageUrl}
-            imageSettings={imageSettings}
-            filterSettings={filterSettings}
-            mockupSettings={mockupSettings}
-            onChangeSettings={handleImageSettingsChange}
-            scaleFactor={scaleFactor}
-            displayWidth={displayWidth}
-            displayHeight={displayHeight}
-            selectedDevice={selectedDevice}
-          />
-        </div>
+        {activeAppTab === 'wallpaper' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* LEFT COLUMN: The Interactive Phone Mockup (cols: 5) */}
+            <div className="lg:col-span-5 flex flex-col items-center justify-center bg-zinc-900/30 p-6 rounded-3xl border border-zinc-900 shadow-xl backdrop-blur-sm self-stretch min-h-[660px]">
+              <PhoneMockup 
+                imageUrl={imageUrl}
+                imageSettings={imageSettings}
+                filterSettings={filterSettings}
+                mockupSettings={mockupSettings}
+                onChangeSettings={handleImageSettingsChange}
+                scaleFactor={scaleFactor}
+                displayWidth={displayWidth}
+                displayHeight={displayHeight}
+                selectedDevice={selectedDevice}
+              />
+            </div>
 
-        {/* RIGHT COLUMN: Sidebar Configuration Controls (cols: 7) */}
-        <div className="lg:col-span-7 flex flex-col justify-between h-full self-stretch min-h-[660px]">
-          <SidebarControls 
-            imageSettings={imageSettings}
-            filterSettings={filterSettings}
-            mockupSettings={mockupSettings}
-            onChangeImageSettings={handleImageSettingsChange}
-            onChangeFilterSettings={handleFilterSettingsChange}
-            onChangeMockupSettings={handleMockupSettingsChange}
-            onUploadImage={handleUploadImage}
-            onSelectPreset={handleSelectPreset}
-            onDownload={handleDownload}
-            onResetAll={handleResetAll}
-            imageUrl={imageUrl}
-            selectedDevice={selectedDevice}
-            onChangeDevice={setSelectedDevice}
-            devicePresets={devicePresets}
-            onAddCustomDevice={handleAddCustomDevice}
-          />
-        </div>
+            {/* RIGHT COLUMN: Sidebar Configuration Controls (cols: 7) */}
+            <div className="lg:col-span-7 flex flex-col justify-between h-full self-stretch min-h-[660px]">
+              <SidebarControls 
+                imageSettings={imageSettings}
+                filterSettings={filterSettings}
+                mockupSettings={mockupSettings}
+                onChangeImageSettings={handleImageSettingsChange}
+                onChangeFilterSettings={handleFilterSettingsChange}
+                onChangeMockupSettings={handleMockupSettingsChange}
+                onUploadImage={handleUploadImage}
+                onSelectPreset={handleSelectPreset}
+                onDownload={handleDownload}
+                onResetAll={handleResetAll}
+                imageUrl={imageUrl}
+                selectedDevice={selectedDevice}
+                onChangeDevice={setSelectedDevice}
+                devicePresets={devicePresets}
+                onAddCustomDevice={handleAddCustomDevice}
+              />
+            </div>
+          </div>
+        ) : (
+          <AnimalFaceTest showStatus={showStatus} />
+        )}
 
       </main>
 
@@ -610,11 +646,17 @@ export default function App() {
 
       {/* ================= FOOTER ================= */}
       <footer className="border-t border-zinc-900 bg-zinc-950/40 py-6 text-center text-[11px] text-zinc-500 space-y-2">
-        <p className="font-mono">
-          {selectedDevice.name} Specifications: {selectedDevice.screenSize} Display • {selectedDevice.width} x {selectedDevice.height} px {selectedDevice.ppi ? `• ${selectedDevice.ppi} ppi` : ''} • {selectedDevice.aspectRatio} Aspect Ratio
-        </p>
+        {activeAppTab === 'wallpaper' ? (
+          <p className="font-mono">
+            {selectedDevice.name} Specifications: {selectedDevice.screenSize} Display • {selectedDevice.width} x {selectedDevice.height} px {selectedDevice.ppi ? `• ${selectedDevice.ppi} ppi` : ''} • {selectedDevice.aspectRatio} Aspect Ratio
+          </p>
+        ) : (
+          <p className="font-mono">
+            AI Engine: Teachable Machine Image Classifier (TensorFlow.js) • Model Endpoint: ecRoXhigM
+          </p>
+        )}
         <p className="text-zinc-600">
-          본 사이트는 클라이언트 사이드 단독 동작 솔루션으로 제작되어, 사용자의 개인 사진이 서버로 전송되지 않고 브라우저 내에서 안전하고 신속하게 처리됩니다.
+          본 사이트는 클라이언트 사이드 단독 동작 솔루션으로 제작되어, 사용자의 개인 사진 및 카메라 영상이 외부 서버로 전송되지 않고 브라우저 내에서 안전하고 신속하게 처리됩니다.
         </p>
       </footer>
 
